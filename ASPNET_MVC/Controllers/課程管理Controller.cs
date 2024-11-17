@@ -1,4 +1,6 @@
-﻿namespace ASPNET_MVC.Controllers;
+﻿using System.Net.Http;
+
+namespace ASPNET_MVC.Controllers;
 
 //[ServiceFilter<計算每個頁面的實際執行時間Attribute>]
 //[計算每個頁面的實際執行時間]
@@ -9,17 +11,25 @@ public class 課程管理Controller : Controller
     private readonly IDepartmentRespository departmentRepo;
     private readonly IUnitOfWork uow;
 
-    public 課程管理Controller(ICourseRepository courseRepo , IDepartmentRespository departmentRepo,  IUnitOfWork uow)
+    // HttpClient
+    private readonly HttpClient httpClient;
+
+    public 課程管理Controller(ICourseRepository courseRepo , IDepartmentRespository departmentRepo,  IUnitOfWork uow , IHttpClientFactory hf)
     {
         this.courseRepo = courseRepo;
         this.departmentRepo = departmentRepo;
         this.uow = uow;
         this.courseRepo.UnitOfWork = uow;
+
+        // HttpClient
+        httpClient = hf.CreateClient();
     }
 
     [HttpGet("")]
     public async Task<IActionResult> Index(int pageNumber = 1)
     {
+        var httpClientResponse = httpClient.GetAsync("");
+
         var data = courseRepo.FindAll();
         var paged = await data.ToPagedListAsync(pageNumber, 4);
 
