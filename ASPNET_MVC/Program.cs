@@ -17,6 +17,10 @@ builder.Services.AddDbContext<ContosoUniversityContext>(
 // 註冊才能注入
 builder.Services.AddScoped<計算每個頁面的實際執行時間Attribute>();
 
+builder.Services.AddScoped<ICourseRepository , CourseRepository>();
+builder.Services.AddScoped<IDepartmentRespository , DepartmentRespository>();
+builder.Services.AddScoped<IUnitOfWork , EFUnitOfWork>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

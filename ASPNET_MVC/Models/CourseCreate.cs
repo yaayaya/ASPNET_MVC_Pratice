@@ -22,6 +22,9 @@ public partial class CourseCreate : IValidatableObject
     [DisplayName("課程評價")]
     public int Credits { get; set; }
 
+    public DateTime StartDate { get; set; }
+
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (this.Title.Contains("test") && this.Credits < 3)

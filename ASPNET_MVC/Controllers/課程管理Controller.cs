@@ -1,70 +1,69 @@
-﻿using ASPNET_MVC.ActionFilters;
-using ASPNET_MVC.Models;
-using ASPNET_MVC.Utils;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using X.PagedList;
+﻿namespace ASPNET_MVC.Controllers;
 
-namespace ASPNET_MVC.Controllers
+//[ServiceFilter<計算每個頁面的實際執行時間Attribute>]
+//[計算每個頁面的實際執行時間]
+[Route("members/[controller]")]
+public class 課程管理Controller : Controller
 {
-    //[ServiceFilter<計算每個頁面的實際執行時間Attribute>]
-    //[計算每個頁面的實際執行時間]
-    [Route("members/[controller]")]
-    public class 課程管理Controller : Controller
+    private readonly ICourseRepository courseRepo;
+    private readonly IDepartmentRespository departmentRepo;
+    private readonly IUnitOfWork uow;
+
+    public 課程管理Controller(ICourseRepository courseRepo , IDepartmentRespository departmentRepo,  IUnitOfWork uow)
     {
-        private readonly ContosoUniversityContext db;
+        this.courseRepo = courseRepo;
+        this.departmentRepo = departmentRepo;
+        this.uow = uow;
+        this.courseRepo.UnitOfWork = uow;
+    }
 
-        public 課程管理Controller(ContosoUniversityContext db)
+    [HttpGet("")]
+    public async Task<IActionResult> Index(int pageNumber = 1)
+    {
+        var data = courseRepo.FindAll();
+        var paged = await data.ToPagedListAsync(pageNumber, 4);
+
+        return View(paged);
+    }
+
+    [HttpGet("New")]
+    public ActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost("New")]
+    public ActionResult Create(CourseCreate data)
+    {
+        if (ModelState.IsValid)
         {
-            this.db = db;            
-        }
-
-        [HttpGet("")]
-        public async Task<IActionResult> Index(int pageNumber = 1)
-        {
-            var data = db.Courses.Include(p=>p.Department).AsQueryable();
-            var paged = await data.ToPagedListAsync(pageNumber, 4);
-
-            return View(paged);
-        }
-
-        [HttpGet("New")]
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost("New")]
-        public ActionResult Create(CourseCreate data)
-        {
-            if (ModelState.IsValid)
+            courseRepo.Add(new Course
             {
-                db.Courses.Add(new Course
-                {
-                    Credits = data.Credits,
-                    Title = data.Title,
-                });
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+                Credits = data.Credits,
+                Title = data.Title,
+            });
 
-            return View(data);
+            courseRepo.UnitOfWork.Commit();
+
+            return RedirectToAction("Index");
         }
 
-        [HttpGet("info/{slug:maxlength(100)}")]
-        public ActionResult Details(string slug)
+        return View(data);
+    }
+
+    [HttpGet("info/{slug:maxlength(100)}")]
+    public ActionResult Details(string slug)
+    {
+        //courseRepo.Courses.ToList().ForEach(p => p.Slug = p.Title.ToSlug());
+        //courseRepo.SaveChanges();
+
+        var data = courseRepo.FindOne(slug);
+
+        if (data == null)
         {
-            //db.Courses.ToList().ForEach(p => p.Slug = p.Title.ToSlug());
-            //db.SaveChanges();
-
-            var data = db.Courses.Include(c => c.Department).FirstOrDefault(c => c.Slug == slug);
-
-            if (data == null)
-            {
-                return NotFound();
-            }
-
-            return View(data);
+            return NotFound();
         }
+
+        return View(data);
     }
 }

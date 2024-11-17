@@ -1,60 +1,75 @@
-﻿@using X.PagedList
-@using X.PagedList.Mvc.Core
-@model IEnumerable<ASPNET_MVC.Models.Course>
+﻿@model IEnumerable<Course>
 
 @{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Index";
 }
+
 <link href="~/css/PagedList.css" rel="stylesheet" />
 
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+	<a asp-action="Create">Create New</a>
 </p>
 <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Credits)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DepartmentId)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Credits)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Department.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.CourseId">Edit</a> |
-                <a asp-action="Details" asp-route-slug="@item.Slug">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.CourseId">Delete</a>
-            </td>
-        </tr>
-}
+	<thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.Title)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Credits)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Description)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.DepartmentId)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.StartDate)
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Title)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Credits)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Description)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Department.Name)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.StartDate)
+				</td>
+				<td>
+					<a asp-action="Edit" asp-route-id="@item.CourseId">Edit</a> |
+					<a asp-action="Details" asp-route-slug="@item.Slug">Details</a> |
+					<a asp-action="Delete" asp-route-id="@item.CourseId">Delete</a>
+				</td>
+			</tr>
+		}
 
-    </tbody>
+	</tbody>
 
 </table>
 <!-- output a paging control that lets the user navigation to the previous page, next page, etc -->
 @Html.PagedListPager((IPagedList)Model, pageNumber => Url.Action("Index", new { pageNumber }))
+
+@* Tag Helper版本 *@
+@* <印出所有課程資料-這是一個下拉選單 name="_ListOfCourseOL"></印出所有課程資料-這是一個下拉選單> *@
+
+<partial name="_ListOfCoursesOL" />
+
+@section Footer {
+	<p>Footer From Index</p>
+}

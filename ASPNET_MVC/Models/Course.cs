@@ -2,6 +2,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace ASPNET_MVC.Models;
 
@@ -18,6 +19,10 @@ public partial class Course
     public string Description { get; set; }
 
     public string Slug { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    public DateTime StartDate { get; set; }
 
     public virtual Department Department { get; set; }
 
